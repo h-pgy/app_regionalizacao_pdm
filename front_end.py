@@ -38,3 +38,9 @@ navbar = dbc.NavbarSimple(
     color="primary",
     dark=True,
 )
+
+card_meta = dbc.Card(
+    dbc.CardBody(
+    id = 'card-meta',),
+    style={"width": "20rem"},
+)

@@ -6,8 +6,8 @@ import dash_bootstrap_components as dbc
 import plotly.express as px
 import random
 from utils import (metas_por_secretaria, filtrar_por_meta, 
-    decidir_plot, prep_shapefiles, prep_data)
-from front_end import simple_jumbotron, navbar
+    decidir_plot, prep_shapefiles, prep_data, get_meta_data)
+from front_end import simple_jumbotron, navbar, card_meta
 
 #abre os dados utilizados no dash
 df = prep_data()
@@ -67,7 +67,8 @@ app.layout = html.Div([
         className='flex-container',
         ),
     html.Div([
-        dcc.Graph(id="choropleth", style = {'display' : 'inline-block', 'width': '80%', 'float' : 'left'})
+        dcc.Graph(id="choropleth", style = {'display' : 'inline-block', 'width': '80%', 'float' : 'left'}),
+        card_meta
         ],
     className='flex-container'
     ),
@@ -103,6 +104,35 @@ def display_choropleth(meta):
     fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
     
     return fig
+
+@app.callback(
+    Output("card-meta", "children"), 
+    [Input("dropdown-metas", "value")])
+def display_card_meta(meta):
+
+
+    num, desc, indicador, secretaria = get_meta_data(df, meta)
+    children = [
+            html.H4(f"Meta {num}", className="card-title"),
+            html.H6("Descrição da meta", className="card-subtitle"),
+            html.P(
+                desc,
+                className="card-text",
+            ),
+            html.H6("Indicador:", className="card-subtitle"),
+            html.P(
+                indicador,
+                className="card-text",
+            ),
+            html.H6("Secretaria(s) Responsável:", className="card-subtitle"),
+            html.P(
+                secretaria,
+                className="card-text",
+            )
+        ]
+
+    return children
+
 
 if __name__ == "__main__":
 

@@ -60,3 +60,9 @@ def prep_data():
     df['codigo_zonas'] = df['codigo_zonas'].apply(lambda x: str(int(x)) if pd.notnull(x) else '')
 
     return df
+
+def get_meta_data(df, meta):
+
+    row = df[df['numero_meta']==meta].iloc[0]
+
+    return row['numero_meta'], row['meta'], row['indicador'], row['secretaria']
