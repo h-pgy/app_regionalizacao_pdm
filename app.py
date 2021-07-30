@@ -35,6 +35,7 @@ app.layout = html.Div([
             for secretaria in secretarias
         ],
         value='',
+        placeholder="Secretaria Responsável",
         style={'display': 'inline-block',
         'width' : '40%',
         'height': '20px',
@@ -48,6 +49,7 @@ app.layout = html.Div([
             for meta in metas
         ],
         value=random.choice(metas),
+        placeholder="Número da meta",
         style={'display': 'inline-block',
         'width' : '40%',
         'height': '20px',
@@ -88,4 +90,6 @@ def display_choropleth(meta):
     
     return fig
 
-app.run_server(debug=True)
+if __name__ == "__main__":
+
+    app.run_server(debug=True)
