@@ -2,11 +2,12 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
-import dash_bootstrap_components as dbc
 import plotly.express as px
 import pandas as pd
 import geopandas as gpd
 import random
+from utils import (metas_por_secretaria, filtrar_por_meta, 
+    decidir_plot, merge_subs, merge_zonas)
 
 #abre dados
 df = pd.read_csv('dados_regionalizacao_pdm.csv', sep = ';')
@@ -27,40 +28,7 @@ zonas.to_crs(epsg=4326, inplace=True)
 secretarias = df['secretaria'].unique()
 metas = df['numero_meta'].unique()
 
-def metas_por_secretaria(secretaria):
 
-    mask = df['secretaria']==secretaria
-
-    return df[mask]['numero_meta'].unique()
-
-def filtrar_por_meta(meta_num):
-
-    mask = df['numero_meta']==meta_num
-    
-    return df[mask]
-
-def merge_subs(df):
-
-    merged = pd.merge(subs, df, left_on='sp_codigo', right_on='codigo_subs', how='left')
-    merged['valor'].fillna(0, inplace=True)
-
-    return merged
-
-def merge_zonas(df):
-
-    merged = pd.merge(zonas, df, left_on='COD_REG_5', right_on='codigo_zonas', how='left')
-
-    merged['valor'].fillna(0, inplace=True)
-
-    return merged
-
-def decidir_plot(df):
-
-    if df['codigo_subs'].isnull().all():
-
-        return merge_zonas(df)
-    
-    return merge_subs(df)
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
@@ -103,9 +71,9 @@ app.layout = html.Div([
 @app.callback(
     dash.dependencies.Output('dropdown-metas', 'options'),
     [dash.dependencies.Input('dropdown-secretarias', 'value')])
-def update_metas(value):
+def update_metas(secretaria):
     
-    metas = metas_por_secretaria(value)
+    metas = metas_por_secretaria(df, secretaria)
     return [{'label': meta, 'value': meta}
             for meta in metas
         ]
@@ -115,8 +83,8 @@ def update_metas(value):
     [Input("dropdown-metas", "value")])
 def display_choropleth(meta):
 
-    data = filtrar_por_meta(meta)
-    geo_df = decidir_plot(data)
+    data = filtrar_por_meta(df, meta)
+    geo_df = decidir_plot(data, subs, zonas)
 
     fig = px.choropleth(
         geo_df,
