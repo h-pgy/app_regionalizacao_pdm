@@ -3,27 +3,15 @@ import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
 import plotly.express as px
-import pandas as pd
-import geopandas as gpd
 import random
 from utils import (metas_por_secretaria, filtrar_por_meta, 
-    decidir_plot, merge_subs, merge_zonas)
+    decidir_plot, prep_shapefiles, prep_data)
 
-#abre dados
-df = pd.read_csv('dados_regionalizacao_pdm.csv', sep = ';')
-#precisa arrumar a coluna para dar merge depois
-df['codigo_subs'] = df['codigo_subs'].apply(lambda x: str(int(x)) if pd.notnull(x) else '')
-df['codigo_zonas'] = df['codigo_zonas'].apply(lambda x: str(int(x)) if pd.notnull(x) else '')
-
-df['valor'].fillna(0, inplace=True)
+#abre os dados utilizados no dash
+df = prep_data()
 
 #abre shapes e arrumar projeção
-subs = gpd.read_file('mapas/subs/SIRGAS_SHP_subprefeitura_polygon.shp')
-subs.set_crs(epsg='31983', inplace=True)
-subs.to_crs(epsg=4326,inplace=True)
-zonas = gpd.read_file('mapas/regioes/SIRGAS_REGIAO5.shp')
-zonas.set_crs(epsg='31983', inplace=True)
-zonas.to_crs(epsg=4326, inplace=True)
+subs, zonas = prep_shapefiles()
 
 secretarias = df['secretaria'].unique()
 metas = df['numero_meta'].unique()
@@ -34,6 +22,7 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 app.title = 'Regionalização PDM'
+server = app.server
 
 app.layout = html.Div([
     html.H1('Regionalização: Programa de Metas 2021-2024'),
@@ -50,7 +39,7 @@ app.layout = html.Div([
         'width' : '40%',
         'height': '20px',
         'padding': '10px',
-        'text-align': 'left',},
+        'text-align': 'center',},
     ),
     dcc.Dropdown(
         id='dropdown-metas',
@@ -63,7 +52,8 @@ app.layout = html.Div([
         'width' : '40%',
         'height': '20px',
         'padding': '10px',
-        'text-align': 'right',},
+        'text-align': 'center',
+        'position': 'relative'},
     ),
     ])
 ])
