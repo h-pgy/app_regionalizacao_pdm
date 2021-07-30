@@ -42,5 +42,5 @@ navbar = dbc.NavbarSimple(
 card_meta = dbc.Card(
     dbc.CardBody(
     id = 'card-meta',),
-    style={"width": "20rem"},
+    style={"width": "30%", 'display' : 'inline-block', 'float' : 'left'},
 )

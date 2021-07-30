@@ -61,13 +61,13 @@ app.layout = html.Div([
                     
                 )
             ],
-            style={'float':'left', 'width' : '50%', 'padding':'50px'}
+            style={'float':'left', 'padding':'50px'}
             ), 
         ], 
         className='flex-container',
         ),
     html.Div([
-        dcc.Graph(id="choropleth", style = {'display' : 'inline-block', 'width': '80%', 'float' : 'left'}),
+        dcc.Graph(id="choropleth", style = {'display' : 'inline-block','float' : 'left'}),
         card_meta
         ],
     className='flex-container'
@@ -101,7 +101,7 @@ def display_choropleth(meta):
         color_continuous_scale = 'Blues'
         )
     fig.update_geos(fitbounds="locations", visible=False)
-    fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
+    fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0}, width=1000, height=400)
     
     return fig
 
